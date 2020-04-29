@@ -13,10 +13,10 @@ class InstaBot():
 
 
     def mainMenu(self):
-        action = input("\nFollowers or Unfollowers?(F/U). Press q Key to Exit. \n")
-        if action.lower() == "u" or action.lower() == "unfollowers":
+        action = input("\nFollow or Unfollow(F/U). Press q Key to Exit. \n")
+        if action.lower() == "u" or action.lower() == "unfollow":
             self.unFollow()
-        elif action.lower() == "f" or action.lower() == "followers":
+        elif action.lower() == "f" or action.lower() == "follow":
             self.follow()
         elif action.lower() == "q":
             sys.exit()
