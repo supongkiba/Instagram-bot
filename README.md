@@ -14,8 +14,8 @@ git clone https://github.com/supongkiba/instagram-bot.git
 * Create a virtual environment and activate the source.
 ```
 cd instagram-bot
-virtualenv mypython
-source mypython/bin/activate
+python3 -m venv env 
+source env/bin/activate
 ```
 * Install the dependencies.
 ```
