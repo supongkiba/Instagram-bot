@@ -1,6 +1,6 @@
+import sys
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-import sys
 from time import sleep
 
 class InstaBot():
@@ -37,7 +37,7 @@ class InstaBot():
 
 
     def getNames(self):
-        """Function to retieve a list of following/followers usernames. 
+        """Function to retrieve a list of following/followers usernames. 
         Scrolls the follwing/followers element until it's loaded completely.
         This process is slow(intentionally) to make sure that all the users are captured.
         """
