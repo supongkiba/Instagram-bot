@@ -1,6 +1,6 @@
 # Instagram-bot
 
-## Usage
+## Usage [mac/linux]
 * Make sure that your system has Python3 and Pip Installed. 
 * Download and install Chrome driver based on your Chrome browser's version: [Downloads link](https://chromedriver.chromium.org/downloads)
 * Install Python Virtual Enviromment package.
