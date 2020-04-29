@@ -2,7 +2,7 @@
 
 ## Usage [mac/linux]
 * Make sure that your system has Python3 and Pip Installed. 
-* Download, install and configure Chrome driver based on your Chrome browser's version: [Downloads link](https://chromedriver.chromium.org/downloads)
+* Download, install and configure Chrome driver based on your OS & Chrome browser's version: [Downloads link](https://chromedriver.chromium.org/downloads)
 * Install Python Virtual Enviromment package.
 ```
 pip install virtualenv
