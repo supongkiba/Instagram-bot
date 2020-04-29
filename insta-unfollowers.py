@@ -180,5 +180,5 @@ class InstaBot():
             self.continueMenu()
 
 
-bot = InstaBot("supong__", "LOngkok!@14")
+bot = InstaBot("<username>", "<password>")
 bot.initiateBot()
