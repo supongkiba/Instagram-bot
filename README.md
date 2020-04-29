@@ -23,5 +23,5 @@ pip3 install -r requirements.txt
 ```
 * Execute the Script.
 ```
-python3 insta-unfollowers.py
+python3 insta-bot.py
 ```
