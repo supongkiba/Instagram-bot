@@ -21,7 +21,7 @@ source env/bin/activate
 ```
 pip3 install -r requirements.txt
 ```
-* Added you Username(Not Email) and Password in the script
+* Add your Username(Not Email) and Password in the script[line 183]
 ```
 bot = InstaBot("<username>", "<password>")
 ```
