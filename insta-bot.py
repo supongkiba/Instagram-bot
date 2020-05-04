@@ -13,27 +13,47 @@ class InstaBot():
 
 
     def mainMenu(self):
-        action = input("\nFollow or Unfollow(F/U). Press q Key to Exit. \n")
-        if action.lower() == "u" or action.lower() == "unfollow":
-            self.unFollow()
-        elif action.lower() == "f" or action.lower() == "follow":
-            self.follow()
-        elif action.lower() == "q":
+        print("   ++++++++MENU+++++++++++   ")
+        action = input("\n1)Press F to Follow back your Followers.\n2)Press U to Unfollow your Unfollowers.\n3)Press L to like all the Posts of an Account/#Hashtag.\n -Press q Key to Exit. \n").lower()
+        if action == "u" or action == "unfollow":
+            self.followOrUnfollow('unfollow')
+        elif action == "f" or action == "follow":
+            self.followOrUnfollow('follow')
+        elif action == "l" or action == "like":
+            self.likePosts()
+        elif action == "q":
             sys.exit()
         else:
-            print("Sorry, I didn't get you! ")
+            print("\nSorry, I didn't get you! ")
             self.mainMenu()
 
 
     def continueMenu(self):
-        cont = input("\nDo you wanna go back to the main menu? (Yes/No)")
-        if cont.lower() == "yes" or cont.lower() == "y":
+        cont = input("\nDo you wanna go back to the main menu? (Yes/No)").lower()
+        if cont == "yes" or cont == "y":
             self.mainMenu()
-        elif cont.lower() == "no" or cont.lower() == "n":
+        elif cont == "no" or cont == "n":
             sys.exit()
         else:
-            print("Sorry, I didn't get you!\n")
+            print("\nSorry, I didn't get you!\n")
             self.continueMenu()
+
+
+    def scanFollowingFollowers(self):
+        self.driver.get('https://www.instagram.com/' + self.uName)
+
+        sleep(2)
+
+        print("""\nScanning the Following and Followers list. This may take sometime, sit back and relax!\n
+              ### PLEASE DO NOT INTERACT WITH THE BROWSER ###\n\n""")
+        
+        self.driver.find_element_by_xpath("//a[contains(@href,'/following')]").click()            
+        print("Fetching the 'Following' list...\n")
+        self.following = self.getNames()
+            
+        self.driver.find_element_by_xpath("//a[contains(@href,'/followers')]").click()
+        print("Fetching the 'Followers' list...\n")
+        self.followers = self.getNames()
 
 
     def getNames(self):
@@ -67,73 +87,92 @@ class InstaBot():
         """
         for user in users:
             try:
-                self.driver.get('https://www.instagram.com/' + user)
+                self.driver.get(f'https://www.instagram.com/{user}')
                 sleep(2)
                 if category == "unfollow":
                     self.driver.find_elements_by_xpath('//button')[1].click()
                     sleep(1)
                     self.driver.find_element_by_xpath("//*[text()='Unfollow']").click()
-                    print("\nUnfollowed " + user + "...\n")
+                    print(f'\nUnfollowed {user}...\n')
                 else:
                     try:
                         self.driver.find_element_by_xpath("//*[text()='Follow']").click()
-                        print("\nFollowed " + user + "\n")
+                        print(f'\nFollowed {user}\n')
                     except:
                         self.driver.find_element_by_xpath("//button[text()='Follow Back']").click()
-                        print("\nFollowed back " + user + "\n")
+                        print(f'\nFollowed back {user}\n')
                 sleep(1)
             except:
-                print("\nSomthing went wrong! Please make sure the username '" + user + "' and xPath are correct.")
+                print(f'\nSomthing went wrong! Please make sure the username "{user}" and xPath are correct.')
 
 
-    def unFollow(self):
-        not_following_back = [user for user in self.following if user not in self.followers]
-        print("\nThese Users are not Following you back\n\n" + ', '.join(not_following_back) + "\n\n")
-        action = input("\nDo you wanna UNFOLLOW all of them? (Yes/NO).\n-Press m to go back to the main Menu\n-Press q to Exit\n")
-        if action.lower() == "yes" or action.lower() == "y":
-            self.instaAction(not_following_back, "unfollow")
+    def followOrUnfollow(self, category):
+        if not self.following and not self.followers:
+            self.scanFollowingFollowers()
+
+        if category == "follow":
+            accounts = [user for user in self.followers if user not in self.following]
+            statement = "You're not Following back these Followers."
+        else:
+            accounts = [user for user in self.following if user not in self.followers]
+            statement = "These Users are not Following you back"
+            
+        print(f'{statement}\n\n{", ".join(accounts)}\n')
+        action = input(f'Do you wanna {category.upper()} all of them? (Yes/NO).\n-Press m to go back to the main Menu\n-Press q to Exit\n').lower()
+        if action == "yes" or action == "y":
+            self.instaAction(accounts, category)
             self.continueMenu()
-        elif action.lower() == "no" or action.lower() == "n":
-            userToUnfollow = input("\nPlease enter comma separated usernames to Unfollow.\n-Press m to go back to the main Menu\n-Press q to exit\n")
-            if userToUnfollow.lower() == "q":
+        elif action == "no" or action == "n":
+            inputVal = input(f'Please enter comma separated usernames to {category}.\n-Press m to go back to the main Menu\n-Press q to exit\n').lower()
+            if inputVal == "q":
                 sys.exit()
-            elif userToUnfollow.lower() == "m":
+            elif inputVal == "m":
                 self.mainMenu()
             else:
-                self.instaAction(userToUnfollow.replace(" ", "").split(','), "unfollow")
+                self.instaAction(inputVal.replace(" ", "").split(','), "unfollow")
                 self.continueMenu()
-        elif action.lower() == "m":
+        elif action == "m":
             self.mainMenu()
-        elif action.lower() == "q":
+        elif action == "q":
             sys.exit()
         else:
-            print("Sorry, I didn't get you! ")
-            self.unFollow()
+            print("\nSorry, I didn't get you!\n")
+            self.followOrUnfollow(category)
 
 
-    def follow(self):
-        iam_not_following = [user for user in self.followers if user not in self.following]
-        print("\nYou're not Following back these Followers!\n\n" + ', '.join(iam_not_following) + "\n\n")
-        action = input("\nDo you wanna FOLLOW all of them? (Yes/NO).\n-Press m to go back to the main Menu\n-Press q to exit\n")
-        if action.lower() == "yes" or action.lower() == "y":
-            self.instaAction(iam_not_following, "follow")
-            self.continueMenu()
-        elif action.lower() == "no" or action.lower() == "n":
-            userToFollow = input("\nPlease enter comma separated usernames to Follow.\n-Press m to go back to the main Menu\n-Press q to exit\n")
-            if userToFollow.lower() == "q":
-                sys.exit() 
-            elif userToFollow.lower() == "m":
-                self.mainMenu()
-            else:
-                self.instaAction(userToFollow.replace(" ", "").split(','), "follow")
-                self.continueMenu()
-        elif action.lower() == "m":
+    def likePosts(self):
+        """
+        Function to like all the posts of a User/Hashtag untill.
+        """
+        nextImg = True
+        userHash = input("\nEnter a Username or a #Hashtag to like all the Posts\n-Press m to go back to the main Menu\n-Press q to exit\n").lower()
+        if userHash == "q":
+            sys.exit() 
+        elif userHash == "m":
             self.mainMenu()
-        elif action.lower() == "q":
-            sys.exit()
         else:
-            print("Sorry, I didn't get you! ")
-            self.follow()
+            url = "https://www.instagram.com/explore/tags/" if userHash[0] == "#" else "https://www.instagram.com/"
+            self.driver.get(f'{url}{userHash.replace("#","")}')
+            try: 
+                self.driver.find_elements_by_xpath("//*[@class='v1Nh3 kIKUG  _bz0w']/a")[0].click()
+                sleep(1)
+                print(f'Liking all the Posts of {userHash}. Press close(X) in the browser to stop liking\n')
+                # Don't click if it's already liked.
+                if self.driver.execute_script('return document.getElementsByClassName("wpO6b ")[1].firstElementChild.getAttribute("aria-label")').lower() == "like":
+                    self.driver.find_elements_by_xpath('//button[@class="wpO6b "]')[1].click()
+                sleep(1)
+                while nextImg:
+                    try: 
+                        self.driver.find_element_by_xpath('//*[text()="Next"]').click()
+                        sleep(2)
+                        if self.driver.execute_script('return document.getElementsByClassName("wpO6b ")[1].firstElementChild.getAttribute("aria-label")').lower() == "like":
+                            self.driver.find_elements_by_xpath('//button[@class="wpO6b "]')[1].click()
+                    except:
+                        nextImg = False
+                        print("Completed liking photos.\n")
+            except: 
+                print(f'Something went wrong. Please make sure "{userHash}" is a valid Username or a #Hashtag.')
+                  
 
 
     def initiateBot(self): 
@@ -153,7 +192,7 @@ class InstaBot():
                 button_login = self.driver.find_element_by_xpath(
                     '//*[@id="react-root"]/section/main/div/article/div/div[1]/div/form/div[6]/button/div')
             button_login.click()
-            print("\nLogging in to Instagram...\n")
+            print("Logging in to Instagram...\n")
             sleep(3)
 
             try:
@@ -161,22 +200,9 @@ class InstaBot():
                 notnow.click()
             except:
                 pass
-
-            self.driver.get('https://www.instagram.com/' + self.uName)
-
-            sleep(2)
             
-            print("\nScanning the Following and Followers list. This may take sometime, sit back and relax!\n")
-            print("### PLEASE DO NOT INTERACT WITH THE BROWSER ###\n\n")
-            self.driver.find_element_by_xpath("//a[contains(@href,'/following')]").click()
-            print("Fetching the 'Following' list...\n")
-            self.following = self.getNames()
-            
-            self.driver.find_element_by_xpath("//a[contains(@href,'/followers')]").click()
-            print("Fetching the 'Followers' list...\n")
-            self.followers = self.getNames()
-
             self.mainMenu()
+            
             self.continueMenu()
 
 
